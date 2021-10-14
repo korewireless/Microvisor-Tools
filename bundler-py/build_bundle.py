@@ -95,9 +95,9 @@ def sign_manifest_or_not(args, manifest):
 
 def _bundle_app(args):
     body = types.AppManifest.AppBody()
-    body.debug.debuggable = args.debuggable
 
     if args.debug_auth_key:
+        body.debug.debuggable = True
         public_key = serialization.load_pem_public_key(
             args.debug_auth_key.read(),
             backend=default_backend())
@@ -166,13 +166,9 @@ if __name__ == '__main__':
     add_signing_opts(app)
 
     group = app.add_argument_group('Debugging')
-    group.add_argument('--disable-debugging', action='store_false',
-                       dest='debuggable', default=True,
-                       #help='Disable OTA debugging')
-                       help=argparse.SUPPRESS)
     group.add_argument('--debug-auth-key', metavar='FILE',
                        type=argparse.FileType('rb'),
-                       #help='OTA debugging is authenticated using public key in FILE.')
+                       #help='OTA debugging is enabled and authenticated using public key in FILE.')
                        help=argparse.SUPPRESS)
 
     group = app.add_argument_group('Crash behaviour')
