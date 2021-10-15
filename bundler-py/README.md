@@ -23,7 +23,7 @@ If you prefer to build inside a container, or are using Windows or macOS, a Dock
 If you are running on Ubuntu, run the bundler directly, passing your `.elf` file and the name of the output `.zip` file as arguments:
 
 ```shell
-python3 build_bundle.py bundle-app --unsigned your_compiled_app.elf your_bundled_app.zip
+python3 bundler.py your_compiled_app.elf your_bundled_app.zip
 ```
 
 ### As a Docker image
@@ -39,13 +39,13 @@ docker build --build-arg UID=$(id -u) --build-arg GID=$(id -g) -t mvbundler:late
 #### 2. Use the container by mapping your local directory. The image specifies `/mnt` as the `WORKDIR`:
 
 ```shell
-docker run -v $(pwd):/mnt mvbundler:latest bundle-app --help`
+docker run -v $(pwd):/mnt mvbundler:latest --help`
 ```
 
 #### 3. Create a bundle from the output of the [FreeRTOS Demo Project](https://github.com/twilio/twilio-microvisor-freertos/):
 
 ```shell
-docker run -v $(pwd):/mnt mvbundler:latest bundle-app --unsigned gpio_toggle_demo.elf gpio_toggle_demo.zip
+docker run -v $(pwd):/mnt mvbundler:latest gpio_toggle_demo.elf gpio_toggle_demo.zip
 ```
 
 This will output:

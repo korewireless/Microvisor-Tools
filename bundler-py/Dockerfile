@@ -11,8 +11,8 @@ RUN pip3 install cryptography protobuf
 
 WORKDIR /bundler
 
-COPY ./build_bundle.py ./bundle_pb2.py /bundler/
+COPY ./bundler.py ./bundle_pb2.py /bundler/
 
 WORKDIR /mnt
 USER $USERNAME
-ENTRYPOINT ["python3", "/bundler/build_bundle.py"]
+ENTRYPOINT ["python3", "/bundler/bundler.py"]
