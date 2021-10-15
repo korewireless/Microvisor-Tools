@@ -116,20 +116,18 @@ def _bundle_app(args):
 
 if __name__ == '__main__':
     ap = argparse.ArgumentParser()
-    sp = ap.add_subparsers(dest='command')
 
-    app = sp.add_parser('bundle-app')
-    app.add_argument('elf', type=argparse.FileType('r'),
+    ap.add_argument('elf', type=argparse.FileType('r'),
                      help='Input file containing ELF image to write at start of flash.')
-    app.add_argument('out', type=argparse.FileType('wb'),
+    ap.add_argument('out', type=argparse.FileType('wb'),
                      help='Output file for bundle zip.')
 
-    group = app.add_argument_group('Update behaviour')
+    group = ap.add_argument_group('Update behaviour')
     group.add_argument('--minimum-kernel-version', metavar='VERSION',
                        type=int, default=0,
                        help='Require minimum kernel version VERSION.')
 
-    group = app.add_argument_group('Connection behaviour')
+    group = ap.add_argument_group('Connection behaviour')
     group.add_argument('--connection-grace-time', metavar='SECS',
                        type=int, default=0,
                        help='Set connection grace time to SECS.')
@@ -140,7 +138,4 @@ if __name__ == '__main__':
 
     args = ap.parse_args()
 
-    if args.command == 'bundle-app':
-        _bundle_app(args)
-    else:
-        ap.error('unknown command')
+    _bundle_app(args)
