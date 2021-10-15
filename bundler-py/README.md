@@ -31,7 +31,7 @@ docker build --build-arg UID=$(id -u) --build-arg GID=$(id -g) -t mvbundler:late
 3. Create a bundle from the output of the our [Demo Project](https://github.com/twilio/twilio-microvisor-freertos/):
 
 ```
-$ docker run -v $(pwd):/mnt mvbundler:latest bundle-app --unsigned gpio_toggle_demo.elf gpio_toggle_demo.zip
+docker run -v $(pwd):/mnt mvbundler:latest bundle-app gpio_toggle_demo.elf gpio_toggle_demo.zip
 Bundle written to file: gpio_toggle_demo.zip
 ```
 

@@ -82,40 +82,13 @@ def write_layer(zip, contents):
         f.write(contents)
 
 
-def sign_manifest_or_not(args, manifest):
-    if args.unsigned:
-        manifest.signer_id = 0
-        manifest.signature = b''
-    else:
-        signing_key = load_private_key(args.signing_key)
-        manifest.signer_id = signing_key_id(signing_key.public_key())
-        manifest.signature = encode_signature(
-            signing_key.sign(SIGNING_PREFIX + manifest.body, SIGNING_ALGORITHM))
-
-
 def _bundle_app(args):
     body = types.AppManifest.AppBody()
-
-    if args.debug_auth_key:
-        body.debug.debuggable = True
-        public_key = serialization.load_pem_public_key(
-            args.debug_auth_key.read(),
-            backend=default_backend())
-        body.debug.debug_auth_pubkey = encode_public_key(public_key)
-
-    body.update.maximum_politeness_time_sec = args.maximum_politeness_time
+    
     body.update.minimum_kernel_version = args.minimum_kernel_version
 
     body.connectivity.connection_grace_time_sec = args.connection_grace_time
     body.connectivity.minimum_check_in_time_sec = args.minimum_check_in_time
-
-    body.crash.minimum_restart_ms = args.minimum_restart_interval
-    body.crash.maximum_restart_ms = args.maximum_restart_interval
-
-    if args.crash_report_key:
-        public_key = load_public_key(args.crash_report_key)
-        body.crash.crash_report_pubkey = encode_public_key(public_key)
-        body.crash.include_stack_bytes = args.crash_stack_bytes
 
     rom = elf_to_rom(args.elf.name)
 
@@ -127,7 +100,8 @@ def _bundle_app(args):
 
     manifest = types.OpaqueManifest()
     manifest.body = body.SerializeToString()
-    sign_manifest_or_not(args, manifest)
+    manifest.signer_id = 0
+    manifest.signature = b''
 
     # write layer contents and manifest into zip
     with zipfile.ZipFile(args.out, mode='w',
@@ -144,56 +118,13 @@ if __name__ == '__main__':
     ap = argparse.ArgumentParser()
     sp = ap.add_subparsers(dest='command')
 
-    # A note on 'SUPPRESS'ed options below - these are present for future expansion and
-    # will be documented over the course of the Microvisor Beta period.  Please
-    # refer to future documentation on the availability and use of these parameters.
-
     app = sp.add_parser('bundle-app')
     app.add_argument('elf', type=argparse.FileType('r'),
                      help='Input file containing ELF image to write at start of flash.')
     app.add_argument('out', type=argparse.FileType('wb'),
                      help='Output file for bundle zip.')
 
-    def add_signing_opts(parser):
-        group = parser.add_argument_group('Signing') \
-            .add_mutually_exclusive_group(required=True)
-        group.add_argument('--unsigned', action='store_true',
-                           help='Do not sign manifest.')
-        group.add_argument('--signing-key', type=argparse.FileType('rb'),
-                           #help='Sign manifest using provided private key.')
-                           help=argparse.SUPPRESS)
-
-    add_signing_opts(app)
-
-    group = app.add_argument_group('Debugging')
-    group.add_argument('--debug-auth-key', metavar='FILE',
-                       type=argparse.FileType('rb'),
-                       #help='OTA debugging is enabled and authenticated using public key in FILE.')
-                       help=argparse.SUPPRESS)
-
-    group = app.add_argument_group('Crash behaviour')
-    group.add_argument('--crash-report-key', metavar='FILE',
-                       type=argparse.FileType('rb'),
-                       #help='Have device encrypt crash reports using public key in FILE.')
-                       help=argparse.SUPPRESS)
-    group.add_argument('--crash-stack-bytes', metavar='BYTES',
-                       type=int, default=0,
-                       #help='Include BYTES of crashing stack in crash report (default: none)')
-                       help=argparse.SUPPRESS)
-    group.add_argument('--minimum-restart-interval', metavar='MILLISECS',
-                       type=int, default=0,
-                       #help='Ensure crashing application is not automatically restarted more often than MILLISECS.')
-                       help=argparse.SUPPRESS)
-    group.add_argument('--maximum-restart-interval', metavar='MILLISECS',
-                       type=int, default=0,
-                       #help='Ensure repeatedly crashing application is restarted more often than every MILLISECS.')
-                       help=argparse.SUPPRESS)
-
     group = app.add_argument_group('Update behaviour')
-    group.add_argument('--maximum-politeness-time', metavar='SECS',
-                       type=int, default=0,
-                       #help='Take updates automatically after SECS wait if application does not respond.')
-                       help=argparse.SUPPRESS)
     group.add_argument('--minimum-kernel-version', metavar='VERSION',
                        type=int, default=0,
                        help='Require minimum kernel version VERSION.')
