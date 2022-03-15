@@ -90,6 +90,9 @@ def _bundle_app(args):
     body.connectivity.connection_grace_time_sec = args.connection_grace_time
     body.connectivity.minimum_check_in_time_sec = args.minimum_check_in_time
 
+    if args.debug_auth_pubkey:
+        body.debug.debug_auth_pubkey = args.debug_auth_pubkey.read()
+
     rom = elf_to_rom(args.elf.name)
 
     layer = body.layers.add()
@@ -122,10 +125,14 @@ if __name__ == '__main__':
     ap.add_argument('out', type=argparse.FileType('wb'),
                      help='Output file for bundle zip.')
 
+    ap.add_argument('--debug-auth-pubkey', type=argparse.FileType('rb'),
+                     help='Debugging public key')
+
     group = ap.add_argument_group('Update behaviour')
     group.add_argument('--minimum-kernel-version', metavar='VERSION',
                        type=int, default=0,
                        help='Require minimum kernel version VERSION.')
+
 
     group = ap.add_argument_group('Connection behaviour')
     group.add_argument('--connection-grace-time', metavar='SECS',
