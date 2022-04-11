@@ -94,8 +94,13 @@ def _bundle_app(args):
         public_key = serialization.load_pem_public_key(
             args.debug_auth_pubkey.read(),
             backend=default_backend())
-        assert isinstance(public_key, ec.EllipticCurvePublicKey), "Debugging public key should be an EC key"
-        assert isinstance(public_key.curve, ec.SECP256R1), "Debugging public key should use NIST P-256 curve"
+
+        if not isinstance(public_key, ec.EllipticCurvePublicKey):
+            raise Exception('Debugging public key should be an EC key')
+
+        if not isinstance(public_key.curve, ec.SECP256R1):
+            raise Exception('Debugging public key should use NIST P-256 curve')
+
         body.debug.debug_auth_pubkey = encode_public_key(public_key)
 
     rom = elf_to_rom(args.elf.name)
