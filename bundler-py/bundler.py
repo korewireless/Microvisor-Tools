@@ -91,7 +91,17 @@ def _bundle_app(args):
     body.connectivity.minimum_check_in_time_sec = args.minimum_check_in_time
 
     if args.debug_auth_pubkey:
-        body.debug.debug_auth_pubkey = args.debug_auth_pubkey.read()
+        public_key = serialization.load_pem_public_key(
+            args.debug_auth_pubkey.read(),
+            backend=default_backend())
+
+        if not isinstance(public_key, ec.EllipticCurvePublicKey):
+            raise Exception('Debugging public key should be an EC key')
+
+        if not isinstance(public_key.curve, ec.SECP256R1):
+            raise Exception('Debugging public key should use NIST P-256 curve')
+
+        body.debug.debug_auth_pubkey = encode_public_key(public_key)
 
     rom = elf_to_rom(args.elf.name)
 
