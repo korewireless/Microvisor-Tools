@@ -23,7 +23,7 @@ If you prefer to build inside a container, or are using Windows or macOS, a Dock
 If you are running on Ubuntu, run the bundler directly, passing your `.elf` file and the name of the output `.zip` file as arguments:
 
 ```shell
-python3 bundler.py your_compiled_app.elf your_bundled_app.zip
+python3 bundler.py path/to/your_compiled_app.elf path/to/your_bundled_app.zip
 ```
 
 ### As a Docker image
