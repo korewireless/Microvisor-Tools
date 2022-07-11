@@ -12,7 +12,7 @@ Bundler requires Python 3 and has a number of further dependencies. To run Bundl
 
 - `sudo apt-get install python3 python3-pip build-essential protobuf-compiler binutils-arm-none-eabi`
 - `pip3 install cryptography`
-- `pip3 install protobuf`
+- `pip3 install protobuf~=3.0`
 
 If you prefer to build inside a container, or are using Windows or macOS, a Dockerfile is also provided.
 
