@@ -66,15 +66,17 @@ def load_private_key(file):
     return serialization.load_pem_private_key(
         file.read(), password=None, backend=default_backend())
 
-
 def elf_to_rom(elf_filename):
-    with tempfile.NamedTemporaryFile() as tmp:
+    with tempfile.NamedTemporaryFile() as hex:
         normalized_file = os.path.abspath(elf_filename)
-        subprocess.check_call(['arm-none-eabi-objcopy', '-Obinary', '--gap-fill=0xff'] +
-                              [normalized_file, tmp.name])
+        subprocess.check_call(['arm-none-eabi-objcopy', '-Oihex'] + 
+                              [normalized_file, hex.name])
+        with tempfile.NamedTemporaryFile() as tmp:
+            subprocess.check_call(['arm-none-eabi-objcopy', '-Iihex', '-Obinary', '--gap-fill=0xff'] +
+                                  [hex.name, tmp.name])
 
-        tmp.seek(0)
-        return tmp.read()
+            tmp.seek(0)
+            return tmp.read()
 
 
 def write_layer(zip, contents):
