@@ -1,8 +1,8 @@
-# Twilio Microvisor Bundler
+# Microvisor Bundler
 
-This tool will take a compiled binary (`.elf`) of your user code and create a bundle suitable for distribution to a Microvisor device via Twilio.
+This tool will take a compiled binary (`.elf`) of your user code and create an application bundle suitable for distribution to a Microvisor device via the Microvisor cloud.
 
-**IMPORTANT** This is an initial version of this tool whose available options will expand over time. Please update this tool regularly during the Microvisor Beta period.
+**IMPORTANT** Bundler is now deprecated: a more up-to-date version of its functionality is delivered by the Twilio CLI Microvisor Plugin, which should be used in preference to the code included here.
 
 ## Requirements
 
@@ -28,7 +28,7 @@ python3 bundler.py path/to/your_compiled_app.elf path/to/your_bundled_app.zip
 
 ### As a Docker image
 
-**IMPORTANT** You should always rebuild the container after updates to the tools repository.
+**IMPORTANT** You should always rebuild the container after updates to the `Microvisor-Tools` repository.
 
 #### 1. Build the container
 
@@ -42,14 +42,14 @@ docker build --build-arg UID=$(id -u) --build-arg GID=$(id -g) -t mvbundler:late
 docker run -v $(pwd):/mnt mvbundler:latest --help`
 ```
 
-#### 3. Create a bundle from the output of the [FreeRTOS Demo Project](https://github.com/twilio/twilio-microvisor-freertos/):
+#### 3. Create a bundle from the output of the [FreeRTOS Demo Project](https://github.com/korewireless/Microvisor-Demo-CMSIS-Freertos):
 
 ```shell
-docker run -v $(pwd):/mnt mvbundler:latest gpio_toggle_demo.elf gpio_toggle_demo.zip
+docker run -v $(pwd):/mnt mvbundler:latest mv-freertos-cmsis-demo.elf mv-freertos-cmsis-demo.zip
 ```
 
 This will output:
 
 ```shell
-Bundle written to file: gpio_toggle_demo.zip
+Bundle written to file: mv-freertos-cmsis-demo.zip
 ```

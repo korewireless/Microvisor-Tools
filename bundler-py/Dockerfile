@@ -5,8 +5,7 @@ ARG GID=1000
 RUN groupadd -g $GID -o $USERNAME
 RUN useradd -m -u $UID -g $GID -o -s /bin/bash $USERNAME
 
-RUN apt-get -yqq update \
-    && apt-get install -yqq python3 python3-pip build-essential protobuf-compiler binutils-arm-none-eabi
+RUN apt-get update -yqq && apt-get install -yqq python3 python3-pip build-essential protobuf-compiler binutils-arm-none-eabi
 RUN pip3 install cryptography protobuf
 
 WORKDIR /bundler
